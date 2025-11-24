@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>SMSC – Social Media Safety Compliance Index Rechner</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #ff6ad5;
+    }
+    .card {
+      background: #1b1b1b;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #222;
+      color: #eee;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .row > div {
+      flex: 1 1 150px;
+    }
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background: #ff6ad5;
+      color: #111;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      filter: brightness(1.1);
+    }
+    .result {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .details {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 0.9em;
+      white-space: pre-wrap;
+      margin-top: 8px;
+      background: #0f0f0f;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>SMSC Rechner</h1>
+  <p><strong>SMSC</strong> = Social Media Safety Compliance Index.<br>
+  Je höher der Wert, desto weniger dumme Instagram-Safety-Kommentare musst du erwarten. 😎</p>
+
+  <div class="card">
+    <h2>Ausrüstung</h2>
+
+    <label for="wing">Schirm</label>
+    <select id="wing">
+      <option value="0.20">Zugelassen (EN A/B/C/D)</option>
+      <option value="0.00">Nicht zugelassen (Acro / CCC / Proto)</option>
+    </select>
+
+    <label for="check">Schirm-Check (2-Jahres-Check)</label>
+    <select id="check">
+      <option value="0.10">Check vorhanden / gültig</option>
+      <option value="-0.10">Check nicht vorhanden / abgelaufen</option>
+    </select>
+
+    <label for="harness">Gurtzeug</label>
+    <select id="harness">
+      <option value="0.10">Mit Protektor</option>
+      <option value="0.00">Ohne Protektor</option>
+    </select>
+
+    <label for="reserves">Anzahl Rettungen</label>
+    <select id="reserves">
+      <option value="0.00">0</option>
+      <option value="0.15">1</option>
+      <option value="0.20">2</option>
+      <option value="0.25">3</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>Schuhe, Handschuhe, Kopf</h2>
+
+    <div class="row">
+      <div>
+        <label for="shoeLeft">Schuh – linker Fuß</label>
+        <select id="shoeLeft">
+          <option value="0.00">Normaler Schuh</option>
+          <option value="0.07">Knöchelhoher Schuh</option>
+          <option value="-0.10">Barfuß</option>
+        </select>
+      </div>
+      <div>
+        <label for="shoeRight">Schuh – rechter Fuß</label>
+        <select id="shoeRight">
+          <option value="0.00">Normaler Schuh</option>
+          <option value="0.07">Knöchelhoher Schuh</option>
+          <option value="-0.10">Barfuß</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="gloves">Anzahl Handschuhe</label>
+    <select id="gloves">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select>
+
+    <label for="headgear">Kopfbedeckung</label>
+    <select id="headgear">
+      <option value="0.00">Keine Kopfbedeckung</option>
+      <option value="0.10">Helm</option>
+      <option value="0.15">Integralhelm</option>
+      <option value="0.12">Stirnband</option>
+      <option value="0.25">Mütze (Meme-OP)</option>
+    </select>
+  </div>
+
+  <button onclick="calcSMSC()">SMSC berechnen</button>
+
+  <div id="output" class="result"></div>
+  <div id="interpretation"></div>
+  <div id="details" class="details"></div>
+
+  <script>
+    function calcSMSC() {
+      const wing = parseFloat(document.getElementById('wing').value);
+      const check = parseFloat(document.getElementById('check').value);
+      const harness = parseFloat(document.getElementById('harness').value);
+      const reserves = parseFloat(document.getElementById('reserves').value);
+
+      const shoeLeft = parseFloat(document.getElementById('shoeLeft').value);
+      const shoeRight = parseFloat(document.getElementById('shoeRight').value);
+      const shoes = shoeLeft + shoeRight;
+
+      const glovesCount = parseInt(document.getElementById('gloves').value, 10);
+      const gloves = glovesCount * 0.03;
+
+      const headgear = parseFloat(document.getElementById('headgear').value);
+
+      const sum = wing + check + harness + reserves + shoes + gloves + headgear;
+      const smsc = Math.round(sum * 1000) / 1000; // 3 Nachkommastellen
+
+      document.getElementById('output').textContent =
+        'SMSC: ' + smsc.toFixed(3) + ' / ~1.000';
+
+      document.getElementById('interpretation').textContent =
+        interpretSMSC(smsc);
+
+      const detailsText =
+        'Details:\n' +
+        '  Schirm:          ' + wing.toFixed(3) + '\n' +
+        '  Check:           ' + check.toFixed(3) + '\n' +
+        '  Gurtzeug:        ' + harness.toFixed(3) + '\n' +
+        '  Rettungen:       ' + reserves.toFixed(3) + '\n' +
+        '  Schuhe gesamt:   ' + shoes.toFixed(3) + '\n' +
+        '  Handschuhe:      ' + gloves.toFixed(3) + '\n' +
+        '  Kopf:            ' + headgear.toFixed(3) + '\n' +
+        '---------------------------------\n' +
+        '  SMSC gesamt:     ' + smsc.toFixed(3);
+
+      document.getElementById('details').textContent = detailsText;
+    }
+
+    function interpretSMSC(smsc) {
+      let text = '';
+
+      if (smsc <= 0.0) {
+        text = 'Kommentar-Hölle: Die Helmpolizei dreht komplett frei. 🔥';
+      } else if (smsc <= 0.19) {
+        text = 'Sehr niedrig: Stell dich auf viele schlaue Kommentare ein. 🧠💬';
+      } else if (smsc <= 0.39) {
+        text = 'Kritischer Bereich: Mehrere Safety-Schlauberger sind garantiert. ⚠️';
+      } else if (smsc <= 0.59) {
+        text = 'Mittel: Vereinzelte Experten melden sich, aber es hält sich in Grenzen. 🤷‍♂️';
+      } else if (smsc <= 0.79) {
+        text = 'Gut: Meistens Ruhe, nur ab und zu ein Kommentar. ✅';
+      } else if (smsc <= 1.0) {
+        text = 'Sehr hoch: „Boah, voll sicher!“ – kaum Kritik zu erwarten. 😇';
+      } else {
+        text = 'Überkonform: Du hast die Insta-Safety-Polizei mathematisch vernichtet. 🛐';
+      }
+
+      return text;
+    }
+  </script>
+</body>
+</html>
